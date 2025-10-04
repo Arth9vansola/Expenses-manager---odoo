@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import Modal from '../components/Modal';
 import { LoadingSpinner } from '../components/FormComponents';
 import { 
@@ -30,7 +30,12 @@ const ManagerDashboard = ({ user }) => {
     dateTo: ''
   });
 
-  const loadExpenses = useCallback(async () => {
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    loadExpenses();
+  }, [user]);
+
+  const loadExpenses = async () => {
     try {
       setLoading(true);
       console.log('Loading expenses for manager:', user.id);
@@ -72,11 +77,7 @@ const ManagerDashboard = ({ user }) => {
     } finally {
       setLoading(false);
     }
-  }, [user]);
-
-  useEffect(() => {
-    loadExpenses();
-  }, [loadExpenses]);
+  };
 
   const showNotification = (message, type = 'success') => {
     setNotification({ message, type });

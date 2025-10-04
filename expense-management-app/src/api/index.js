@@ -21,6 +21,13 @@ export const apiRequest = async (endpoint, options = {}) => {
   const url = `${API_BASE_URL}${endpoint}`;
   const token = getAuthToken();
   
+  console.log('API Request:', {
+    url,
+    method: options.method || 'GET',
+    hasToken: !!token,
+    token: token ? `${token.substring(0, 10)}...` : 'None'
+  });
+  
   const config = {
     headers: {
       'Content-Type': 'application/json',
@@ -33,9 +40,16 @@ export const apiRequest = async (endpoint, options = {}) => {
   try {
     const response = await fetch(url, config);
     
-    // Handle 401 unauthorized - redirect to login
+    // Handle 401 unauthorized - clear session and redirect to login
     if (response.status === 401) {
       removeAuthToken();
+      // Also clear offline user data
+      try {
+        const offlineStorage = await import('../utils/offlineStorage');
+        await offlineStorage.default.removeData('currentUser');
+      } catch (error) {
+        console.warn('Could not clear offline user data:', error);
+      }
       window.location.href = '/login';
       throw new Error('Authentication required');
     }

@@ -30,10 +30,39 @@ function App() {
         // Initialize offline storage
         await offlineStorage.initialize();
 
-        // Check for existing user session
+        // Check for existing user session and validate token
         const savedUser = await offlineStorage.getData('currentUser');
-        if (savedUser) {
-          setUser(savedUser);
+        const authToken = localStorage.getItem('authToken');
+        
+        if (savedUser && authToken) {
+          // Validate token by making a test API call
+          try {
+            const response = await fetch('http://localhost:8000/api/secure/users/profile/', {
+              headers: {
+                'Authorization': `Token ${authToken}`,
+                'Content-Type': 'application/json'
+              }
+            });
+            
+            if (response.ok) {
+              // Token is valid, keep user logged in
+              setUser(savedUser);
+            } else {
+              // Token is invalid, clear user data
+              console.log('Invalid token, clearing user session');
+              localStorage.removeItem('authToken');
+              await offlineStorage.removeData('currentUser');
+            }
+          } catch (error) {
+            // Network error or token validation failed
+            console.log('Token validation failed, clearing user session:', error);
+            localStorage.removeItem('authToken');
+            await offlineStorage.removeData('currentUser');
+          }
+        } else if (savedUser && !authToken) {
+          // User exists but no token, clear user data
+          console.log('No auth token found, clearing user session');
+          await offlineStorage.removeData('currentUser');
         }
 
         // Get sync queue count
@@ -103,10 +132,17 @@ function App() {
   const handleLogin = async (userData) => {
     setUser(userData);
     await offlineStorage.setData('currentUser', userData);
+    
+    // Debug authentication
+    console.log('User logged in:', {
+      user: userData,
+      token: localStorage.getItem('authToken') ? 'Present' : 'Missing'
+    });
   };
 
   const handleLogout = async () => {
     setUser(null);
+    localStorage.removeItem('authToken'); // Clear auth token
     await offlineStorage.removeData('currentUser');
     
     // Optional: Clear all user data on logout
@@ -137,6 +173,34 @@ function App() {
         return <EmployeeDashboard user={user} isOffline={isOffline} syncPending={syncPending} />;
     }
   };
+
+  // Debug function for authentication troubleshooting
+  React.useEffect(() => {
+    window.debugAuth = () => {
+      const token = localStorage.getItem('authToken');
+      console.log('🔍 Authentication Debug:', {
+        'Auth Token': token ? `${token.substring(0, 20)}...` : 'Missing',
+        'User State': user ? `${user.email} (${user.role})` : 'No user',
+        'LocalStorage Keys': Object.keys(localStorage),
+        'Action': token ? 'Token exists - try API call' : 'No token - need to login'
+      });
+      
+      if (token) {
+        fetch('http://localhost:8000/api/secure/users/profile/', {
+          headers: { 'Authorization': `Token ${token}` }
+        })
+        .then(r => console.log('Token validation:', r.ok ? 'Valid' : 'Invalid'))
+        .catch(e => console.log('Token validation error:', e.message));
+      }
+    };
+    
+    window.clearAuth = async () => {
+      localStorage.removeItem('authToken');
+      await offlineStorage.removeData('currentUser');
+      console.log('✅ Authentication data cleared');
+      window.location.reload();
+    };
+  }, [user]);
 
   if (loading) {
     return (

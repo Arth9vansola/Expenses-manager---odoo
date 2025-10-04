@@ -37,7 +37,8 @@ const EmployeeDashboard = ({ user }) => {
       const response = await getAllExpenses({ user_id: user.id });
       
       if (response.success) {
-        setExpenses(response.data.results || response.data);
+        const expenseData = response.data.results || response.data;
+        setExpenses(Array.isArray(expenseData) ? expenseData : []);
         console.log('Expenses loaded:', response.data);
       } else {
         throw new Error(response.error || 'Failed to load expenses');
@@ -45,6 +46,7 @@ const EmployeeDashboard = ({ user }) => {
     } catch (error) {
       console.error('Error loading expenses:', error);
       showNotification('Failed to load expenses', 'error');
+      setExpenses([]); // Ensure expenses is always an array
     } finally {
       setLoading(false);
     }
@@ -82,7 +84,10 @@ const EmployeeDashboard = ({ user }) => {
       const response = await updateExpense(selectedExpense.id, expenseData);
       
       if (response.success) {
-        setExpenses(expenses.map(e => e.id === selectedExpense.id ? response.data : e));
+        setExpenses((prevExpenses) => {
+          const safeExpenses = Array.isArray(prevExpenses) ? prevExpenses : [];
+          return safeExpenses.map(e => e.id === selectedExpense.id ? response.data : e);
+        });
         setShowEditModal(false);
         setSelectedExpense(null);
         showNotification('Expense updated successfully');
@@ -119,7 +124,10 @@ const EmployeeDashboard = ({ user }) => {
         const response = await deleteExpense(expense.id);
         
         if (response.success) {
-          setExpenses(expenses.filter(e => e.id !== expense.id));
+          setExpenses((prevExpenses) => {
+            const safeExpenses = Array.isArray(prevExpenses) ? prevExpenses : [];
+            return safeExpenses.filter(e => e.id !== expense.id);
+          });
           showNotification('Expense deleted successfully');
           console.log('Expense deleted successfully');
         } else {
@@ -140,7 +148,10 @@ const EmployeeDashboard = ({ user }) => {
         const response = await submitExpense(expense.id);
         
         if (response.success) {
-          setExpenses(expenses.map(e => e.id === expense.id ? response.data : e));
+          setExpenses((prevExpenses) => {
+            const safeExpenses = Array.isArray(prevExpenses) ? prevExpenses : [];
+            return safeExpenses.map(e => e.id === expense.id ? response.data : e);
+          });
           showNotification('Expense submitted for approval');
           console.log('Expense submitted successfully:', response.data);
         } else {
@@ -154,19 +165,20 @@ const EmployeeDashboard = ({ user }) => {
   };
 
   const getExpenseStats = () => {
-    const totalExpenses = expenses.length;
-    const draftCount = expenses.filter(e => e.status === 'draft').length;
-    const pendingCount = expenses.filter(e => e.status === 'pending').length;
-    const approvedCount = expenses.filter(e => e.status === 'approved').length;
-    const rejectedCount = expenses.filter(e => e.status === 'rejected').length;
+    const safeExpenses = Array.isArray(expenses) ? expenses : [];
+    const totalExpenses = safeExpenses.length;
+    const draftCount = safeExpenses.filter(e => e.status === 'draft').length;
+    const pendingCount = safeExpenses.filter(e => e.status === 'pending').length;
+    const approvedCount = safeExpenses.filter(e => e.status === 'approved').length;
+    const rejectedCount = safeExpenses.filter(e => e.status === 'rejected').length;
     
-    const totalAmount = expenses
+    const totalAmount = safeExpenses
       .filter(e => e.status === 'approved')
-      .reduce((sum, e) => sum + e.amount, 0);
+      .reduce((sum, e) => sum + (parseFloat(e.amount) || 0), 0);
     
-    const pendingAmount = expenses
+    const pendingAmount = safeExpenses
       .filter(e => e.status === 'pending')
-      .reduce((sum, e) => sum + e.amount, 0);
+      .reduce((sum, e) => sum + (parseFloat(e.amount) || 0), 0);
 
     return {
       totalExpenses,
