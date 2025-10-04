@@ -4,6 +4,12 @@ from . import views
 from .authentication import SignupView, LoginView, LogoutView, UserManagementView, UserDetailView
 from .expense_api import ExpenseSubmissionView, ExpenseListView, ExpenseDetailView
 from .approval_api import PendingApprovalsView, ExpenseReviewView, ApprovalHistoryView, ApprovalRulesView
+from .approval_rule_api import (
+    ApprovalRuleListCreateView, 
+    ApprovalRuleDetailView, 
+    ApprovalRuleBulkOperationsView,
+    ApprovalRuleValidationView
+)
 
 router = DefaultRouter()
 router.register(r'companies', views.CompanyViewSet)
@@ -33,6 +39,12 @@ urlpatterns = [
     path('api/approvals/<uuid:expense_id>/review/', ExpenseReviewView.as_view(), name='expense-review'),
     path('api/expenses/<uuid:expense_id>/approval-history/', ApprovalHistoryView.as_view(), name='approval-history'),
     path('api/approval-rules/', ApprovalRulesView.as_view(), name='approval-rules-list'),
+    
+    # Step 14: Approval Rule Configuration API endpoints
+    path('api/approval-rules/management/', ApprovalRuleListCreateView.as_view(), name='approval-rules-management'),
+    path('api/approval-rules/management/<uuid:rule_id>/', ApprovalRuleDetailView.as_view(), name='approval-rule-detail'),
+    path('api/approval-rules/bulk/', ApprovalRuleBulkOperationsView.as_view(), name='approval-rules-bulk'),
+    path('api/approval-rules/validate/', ApprovalRuleValidationView.as_view(), name='approval-rules-validate'),
     
     # API router
     path('api/', include(router.urls)),
