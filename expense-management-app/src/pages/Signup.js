@@ -187,11 +187,11 @@ const Signup = ({ onLogin }) => {
 
   return (
     <div className="auth-page">
-      <div className="login-container">
-        <div className="login-card">
-          <div className="login-header">
-            <h1 className="login-title">Create Account</h1>
-            <p className="login-subtitle">Join us to start managing your expenses efficiently</p>
+      <div className="signup-container">
+        <div className="signup-card">
+          <div className="signup-header">
+            <h1 className="signup-title">Create Account</h1>
+            <p className="signup-subtitle">Join us to start managing your expenses efficiently</p>
           </div>
         
           {errors.countries && (
@@ -201,7 +201,7 @@ const Signup = ({ onLogin }) => {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="login-form">
+          <form onSubmit={handleSubmit} className="signup-form">
           <FormInput
             label="Full Name"
             type="text"
@@ -288,7 +288,7 @@ const Signup = ({ onLogin }) => {
 
           <button 
             type="submit" 
-            className="login-button"
+            className="signup-button"
             disabled={loading}
           >
             {loading ? (

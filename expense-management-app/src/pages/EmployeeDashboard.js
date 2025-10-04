@@ -4,6 +4,7 @@ import ExpenseForm from '../components/ExpenseForm';
 import ExpenseTable from '../components/ExpenseTable';
 import { LoadingSpinner } from '../components/FormComponents';
 import { expenseAPI, formatCurrency, getStatusColor } from '../api/expenses';
+import '../styles/dashboard.css';
 import './EmployeeDashboard.css';
 
 const EmployeeDashboard = ({ user }) => {
@@ -69,6 +70,11 @@ const EmployeeDashboard = ({ user }) => {
     setShowEditModal(true);
   };
 
+  const handleViewClick = (expense) => {
+    setSelectedExpense(expense);
+    setShowViewModal(true);
+  };
+
   const handleDeleteExpense = async (expense) => {
     if (window.confirm(`Are you sure you want to delete "${expense.description}"?`)) {
       try {
@@ -122,113 +128,98 @@ const EmployeeDashboard = ({ user }) => {
   const stats = getExpenseStats();
 
   return (
-    <div className="container mt-2">
-      <div className="employee-header">
-        <div>
-          <h1>My Expenses</h1>
-          <p>Welcome back, {user?.name}!</p>
+    <div className="dashboard-page">
+      <div className="dashboard-container">
+        <div className="dashboard-header">
+          <h1 className="dashboard-title">My Expenses</h1>
+          <p className="dashboard-subtitle">Welcome back, {user?.name}! Manage your expenses efficiently.</p>
+          
+          <div className="dashboard-actions">
+            <button 
+              className="btn-primary"
+              onClick={() => setShowAddModal(true)}
+            >
+              <span>➕</span>
+              Add New Expense
+            </button>
+          </div>
         </div>
-        
+
         {notification && (
           <div className={`notification ${notification.type}`}>
+            <span>{notification.type === 'success' ? '✅' : notification.type === 'error' ? '❌' : '⚠️'}</span>
             {notification.message}
           </div>
         )}
-      </div>
 
-      {/* Quick Stats */}
-      <div className="stats-grid">
-        <div className="stat-card">
-          <div className="stat-number">{stats.totalExpenses}</div>
-          <div className="stat-label">Total Expenses</div>
-        </div>
-        <div className="stat-card pending">
-          <div className="stat-number">{stats.pendingCount}</div>
-          <div className="stat-label">Pending Approval</div>
-        </div>
-        <div className="stat-card success">
-          <div className="stat-number">{stats.approvedCount}</div>
-          <div className="stat-label">Approved</div>
-        </div>
-        <div className="stat-card draft">
-          <div className="stat-number">{stats.draftCount}</div>
-          <div className="stat-label">Drafts</div>
-        </div>
-        <div className="stat-card amount">
-          <div className="stat-number">{formatCurrency(stats.totalAmount, 'USD')}</div>
-          <div className="stat-label">Approved Amount</div>
-        </div>
-      </div>
-
-      {/* Quick Actions */}
-      <div className="quick-actions">
-        <div className="card">
-          <h3>Quick Actions</h3>
-          <div className="action-buttons-grid">
-            <button 
-              className="btn btn-primary action-button"
-              onClick={() => setShowAddModal(true)}
-            >
-              <span className="action-icon">➕</span>
-              <div>
-                <div className="action-title">Add New Expense</div>
-                <div className="action-subtitle">Create and save as draft</div>
-              </div>
-            </button>
-            
-            <button 
-              className="btn btn-secondary action-button"
-              onClick={() => {
-                const drafts = expenses.filter(e => e.status === 'draft');
-                if (drafts.length > 0) {
-                  handleEditClick(drafts[0]);
-                } else {
-                  showNotification('No draft expenses found', 'info');
-                }
-              }}
-            >
-              <span className="action-icon">📝</span>
-              <div>
-                <div className="action-title">Continue Draft</div>
-                <div className="action-subtitle">{stats.draftCount} drafts available</div>
-              </div>
-            </button>
-
-            {stats.pendingAmount > 0 && (
-              <div className="pending-alert">
-                <span className="alert-icon">⏳</span>
-                <div>
-                  <div className="alert-title">Pending Approval</div>
-                  <div className="alert-subtitle">
-                    {formatCurrency(stats.pendingAmount, 'USD')} awaiting approval
-                  </div>
-                </div>
-              </div>
-            )}
+        {/* Quick Stats */}
+        <div className="dashboard-stats">
+          <div className="stat-card">
+            <div className="stat-header">
+              <div className="stat-icon">📊</div>
+            </div>
+            <div className="stat-value">{stats.totalExpenses}</div>
+            <div className="stat-label">Total Expenses</div>
+          </div>
+          
+          <div className="stat-card">
+            <div className="stat-header">
+              <div className="stat-icon">⏳</div>
+            </div>
+            <div className="stat-value">{stats.pendingCount}</div>
+            <div className="stat-label">Pending Approval</div>
+          </div>
+          
+          <div className="stat-card">
+            <div className="stat-header">
+              <div className="stat-icon">✅</div>
+            </div>
+            <div className="stat-value">{stats.approvedCount}</div>
+            <div className="stat-label">Approved</div>
+          </div>
+          
+          <div className="stat-card">
+            <div className="stat-header">
+              <div className="stat-icon">📝</div>
+            </div>
+            <div className="stat-value">{stats.draftCount}</div>
+            <div className="stat-label">Drafts</div>
+          </div>
+          
+          <div className="stat-card">
+            <div className="stat-header">
+              <div className="stat-icon">💰</div>
+            </div>
+            <div className="stat-value">{formatCurrency(stats.totalAmount, 'USD')}</div>
+            <div className="stat-label">Approved Amount</div>
           </div>
         </div>
-      </div>
 
-      {/* Expense Table */}
-      <div className="expense-list">
-        <div className="list-header">
-          <h3>My Expense History</h3>
-          <button 
-            className="btn btn-primary"
-            onClick={() => setShowAddModal(true)}
-          >
-            Add Expense
-          </button>
+        <div className="dashboard-content">
+          <div className="dashboard-section">
+            <div className="section-header">
+              <h2 className="section-title">My Expense History</h2>
+              <p className="section-subtitle">Track and manage all your expense submissions</p>
+            </div>
+            <div className="section-content">
+              {loading ? (
+                <div style={{ textAlign: 'center', padding: '2rem' }}>
+                  <LoadingSpinner size="large" />
+                  <p>Loading expenses...</p>
+                </div>
+              ) : (
+                <ExpenseTable 
+                  expenses={expenses}
+                  onEdit={handleEditClick}
+                  onView={handleViewClick}
+                  onDelete={handleDeleteExpense}
+                  currentUser={user}
+                  isManager={false}
+                />
+              )}
+            </div>
+          </div>
         </div>
-
-        <ExpenseTable
-          expenses={expenses}
-          onView={handleViewExpense}
-          onEdit={handleEditClick}
-          onDelete={handleDeleteExpense}
-          onSubmit={handleSubmitExpense}
-          loading={loading}
-        />
       </div>
 
       {/* Add Expense Modal */}

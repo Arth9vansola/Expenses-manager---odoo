@@ -6,6 +6,7 @@ import { LoadingSpinner } from '../components/FormComponents';
 import { userAPI, getAvailableManagers } from '../api/users';
 import { approvalAPI } from '../api/approval';
 import { expenseAPI, formatCurrency, getStatusColor } from '../api/expenses';
+import '../styles/dashboard.css';
 import './AdminDashboard.css';
 
 const AdminDashboard = ({ user }) => {
@@ -160,43 +161,45 @@ const AdminDashboard = ({ user }) => {
   const stats = getStats();
 
   return (
-    <div className="container mt-2">
-      <div className="admin-header">
-        <div>
-          <h1>Admin Dashboard</h1>
-          <p>Welcome back, {user?.name}!</p>
+    <div className="dashboard-page">
+      <div className="dashboard-container">
+        <div className="dashboard-header">
+          <h1 className="dashboard-title">Admin Dashboard</h1>
+          <p className="dashboard-subtitle">Welcome back, {user?.name}! Manage your organization's expense system</p>
         </div>
-        
+
         {notification && (
           <div className={`notification ${notification.type}`}>
+            <span>{notification.type === 'success' ? '✅' : notification.type === 'error' ? '❌' : '⚠️'}</span>
             {notification.message}
           </div>
         )}
-      </div>
 
-      <div className="admin-tabs">
-        <button 
-          className={`tab-button ${activeTab === 'overview' ? 'active' : ''}`}
-          onClick={() => setActiveTab('overview')}
-        >
-          Overview
-        </button>
-        <button 
-          className={`tab-button ${activeTab === 'users' ? 'active' : ''}`}
-          onClick={() => setActiveTab('users')}
-        >
-          User Management ({stats.totalUsers})
-        </button>
-        <button 
-          className={`tab-button ${activeTab === 'expenses' ? 'active' : ''}`}
-          onClick={() => setActiveTab('expenses')}
-        >
-          Expense Oversight ({stats.totalExpenses})
-        </button>
-        <button 
-          className={`tab-button ${activeTab === 'rules' ? 'active' : ''}`}
-          onClick={() => setActiveTab('rules')}
-        >
+        <div className="dashboard-content">
+          <div className="dashboard-section">
+            <div className="dashboard-tabs">
+              <button 
+                className={`tab-button ${activeTab === 'overview' ? 'active' : ''}`}
+                onClick={() => setActiveTab('overview')}
+              >
+                Overview
+              </button>
+              <button 
+                className={`tab-button ${activeTab === 'users' ? 'active' : ''}`}
+                onClick={() => setActiveTab('users')}
+              >
+                User Management ({stats.totalUsers})
+              </button>
+              <button 
+                className={`tab-button ${activeTab === 'expenses' ? 'active' : ''}`}
+                onClick={() => setActiveTab('expenses')}
+              >
+                Expense Oversight ({stats.totalExpenses})
+              </button>
+              <button 
+                className={`tab-button ${activeTab === 'rules' ? 'active' : ''}`}
+                onClick={() => setActiveTab('rules')}
+              >
           Approval Rules
         </button>
       </div>
@@ -540,12 +543,6 @@ const AdminDashboard = ({ user }) => {
                   <div className="rule-status active">Active</div>
                 </div>
               </div>
-              
-              <div className="view-all-link">
-                <a href="/admin/approval-rules">
-                  View all rules and detailed configuration →
-                </a>
-              </div>
             </div>
           </div>
         </div>
@@ -729,6 +726,9 @@ const AdminDashboard = ({ user }) => {
           </div>
         )}
       </Modal>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

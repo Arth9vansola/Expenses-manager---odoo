@@ -3,6 +3,7 @@ import Modal from '../components/Modal';
 import { LoadingSpinner } from '../components/FormComponents';
 import { expenseAPI, formatCurrency, getStatusColor } from '../api/expenses';
 import { approvalAPI } from '../api/approval';
+import '../styles/dashboard.css';
 import './ManagerDashboard.css';
 
 const ManagerDashboard = ({ user }) => {
@@ -152,155 +153,175 @@ const ManagerDashboard = ({ user }) => {
   const filteredExpenses = getFilteredExpenses(currentExpenses);
 
   return (
-    <div className="container mt-2">
-      <div className="manager-header">
-        <div>
-          <h1>Approval Dashboard</h1>
-          <p>Welcome, {user?.name} - {user?.role}</p>
+    <div className="dashboard-page">
+      <div className="dashboard-container">
+        <div className="dashboard-header">
+          <h1 className="dashboard-title">Approval Dashboard</h1>
+          <p className="dashboard-subtitle">Welcome, {user?.name} - Manage team expense approvals efficiently</p>
         </div>
-        
+
         {notification && (
           <div className={`notification ${notification.type}`}>
+            <span>{notification.type === 'success' ? '✅' : notification.type === 'error' ? '❌' : '⚠️'}</span>
             {notification.message}
           </div>
         )}
-      </div>
 
-      {/* Manager Stats */}
-      <div className="stats-grid">
-        <div className="stat-card urgent">
-          <div className="stat-number">{stats.pendingCount}</div>
-          <div className="stat-label">Pending Approvals</div>
-        </div>
-        <div className="stat-card amount">
-          <div className="stat-number">{formatCurrency(stats.pendingAmount, 'USD')}</div>
-          <div className="stat-label">Pending Amount</div>
-        </div>
-        <div className="stat-card success">
-          <div className="stat-number">{stats.monthlyCount}</div>
-          <div className="stat-label">Approved This Month</div>
-        </div>
-        <div className="stat-card info">
-          <div className="stat-number">{formatCurrency(stats.monthlyAmount, 'USD')}</div>
-          <div className="stat-label">Monthly Total</div>
-        </div>
-        <div className="stat-card team">
-          <div className="stat-number">{stats.teamSize}</div>
-          <div className="stat-label">Team Members</div>
-        </div>
-      </div>
-
-      {/* Approval Queue */}
-      <div className="approval-section">
-        <div className="section-header">
-          <div className="tab-navigation">
-            <button 
-              className={`tab-button ${activeTab === 'pending' ? 'active' : ''}`}
-              onClick={() => setActiveTab('pending')}
-            >
-              Pending Approvals ({stats.pendingCount})
-            </button>
-            <button 
-              className={`tab-button ${activeTab === 'all' ? 'active' : ''}`}
-              onClick={() => setActiveTab('all')}
-            >
-              All Team Expenses
-            </button>
+        {/* Manager Stats */}
+        <div className="dashboard-stats">
+          <div className="stat-card">
+            <div className="stat-header">
+              <div className="stat-icon">⚡</div>
+            </div>
+            <div className="stat-value">{stats.pendingCount}</div>
+            <div className="stat-label">Pending Approvals</div>
+            <div className="stat-change positive">
+              <span>🔥</span>
+              Urgent
+            </div>
           </div>
           
-          {stats.pendingCount > 0 && activeTab === 'pending' && (
-            <div className="urgent-notice">
-              ⚠️ {stats.pendingCount} expense{stats.pendingCount !== 1 ? 's' : ''} awaiting your approval
+          <div className="stat-card">
+            <div className="stat-header">
+              <div className="stat-icon">💰</div>
             </div>
-          )}
-        </div>
-
-        {/* Filters */}
-        <div className="filters-section">
-          <div className="filters-grid">
-            <input
-              type="text"
-              placeholder="Search by description or employee..."
-              value={filters.search}
-              onChange={(e) => setFilters({ ...filters, search: e.target.value })}
-              className="filter-input"
-            />
-            
-            <select
-              value={filters.category}
-              onChange={(e) => setFilters({ ...filters, category: e.target.value })}
-              className="filter-select"
-            >
-              <option value="">All Categories</option>
-              <option value="travel">Travel</option>
-              <option value="meals">Meals</option>
-              <option value="office">Office Supplies</option>
-              <option value="transport">Transport</option>
-              <option value="accommodation">Accommodation</option>
-              <option value="other">Other</option>
-            </select>
-            
-            <input
-              type="number"
-              placeholder="Min Amount"
-              value={filters.amountMin}
-              onChange={(e) => setFilters({ ...filters, amountMin: e.target.value })}
-              className="filter-input"
-            />
-            
-            <input
-              type="number"
-              placeholder="Max Amount"
-              value={filters.amountMax}
-              onChange={(e) => setFilters({ ...filters, amountMax: e.target.value })}
-              className="filter-input"
-            />
-            
-            <input
-              type="date"
-              placeholder="From Date"
-              value={filters.dateFrom}
-              onChange={(e) => setFilters({ ...filters, dateFrom: e.target.value })}
-              className="filter-input"
-            />
-            
-            <input
-              type="date"
-              placeholder="To Date"
-              value={filters.dateTo}
-              onChange={(e) => setFilters({ ...filters, dateTo: e.target.value })}
-              className="filter-input"
-            />
+            <div className="stat-value">{formatCurrency(stats.pendingAmount, 'USD')}</div>
+            <div className="stat-label">Pending Amount</div>
           </div>
           
-          <button 
-            onClick={() => setFilters({
-              search: '', category: '', amountMin: '', amountMax: '', dateFrom: '', dateTo: ''
-            })}
-            className="btn btn-secondary clear-filters"
-          >
-            Clear Filters
-          </button>
+          <div className="stat-card">
+            <div className="stat-header">
+              <div className="stat-icon">✅</div>
+            </div>
+            <div className="stat-value">{stats.monthlyCount}</div>
+            <div className="stat-label">Approved This Month</div>
+          </div>
+          
+          <div className="stat-card">
+            <div className="stat-header">
+              <div className="stat-icon">📊</div>
+            </div>
+            <div className="stat-value">{formatCurrency(stats.monthlyAmount, 'USD')}</div>
+            <div className="stat-label">Monthly Total</div>
+          </div>
+          
+          <div className="stat-card">
+            <div className="stat-header">
+              <div className="stat-icon">👥</div>
+            </div>
+            <div className="stat-value">{stats.teamSize}</div>
+            <div className="stat-label">Team Members</div>
+          </div>
         </div>
 
-        {/* Expense Table */}
-        <div className="approval-table-container">
-          {loading ? (
-            <div className="loading-container">
-              <LoadingSpinner />
-              <p>Loading expenses...</p>
+        <div className="dashboard-content">
+          <div className="dashboard-section">
+            <div className="dashboard-tabs">
+              <button 
+                className={`tab-button ${activeTab === 'pending' ? 'active' : ''}`}
+                onClick={() => setActiveTab('pending')}
+              >
+                Pending Approvals ({stats.pendingCount})
+              </button>
+              <button 
+                className={`tab-button ${activeTab === 'all' ? 'active' : ''}`}
+                onClick={() => setActiveTab('all')}
+              >
+                All Team Expenses
+              </button>
             </div>
-          ) : filteredExpenses.length === 0 ? (
-            <div className="empty-state">
-              <div className="empty-icon">📋</div>
-              <h3>No expenses found</h3>
-              <p>
-                {activeTab === 'pending' 
-                  ? "No expenses are currently pending your approval." 
-                  : "No expenses match your current filters."}
-              </p>
-            </div>
-          ) : (
+            
+            <div className="section-content">
+              {stats.pendingCount > 0 && activeTab === 'pending' && (
+                <div className="notification warning" style={{ margin: '0 0 1rem 0' }}>
+                  <span>⚠️</span>
+                  {stats.pendingCount} expense{stats.pendingCount !== 1 ? 's' : ''} awaiting your approval
+                </div>
+              )}
+
+              {/* Filters */}
+              <div style={{ marginBottom: '1rem', padding: '1rem', background: 'var(--background-alt)', borderRadius: '12px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
+                  <input
+                    type="text"
+                    placeholder="Search by description or employee..."
+                    value={filters.search}
+                    onChange={(e) => setFilters({ ...filters, search: e.target.value })}
+                    style={{ padding: '0.5rem', borderRadius: '8px', border: '1px solid var(--border-color)' }}
+                  />
+                  
+                  <select
+                    value={filters.category}
+                    onChange={(e) => setFilters({ ...filters, category: e.target.value })}
+                    style={{ padding: '0.5rem', borderRadius: '8px', border: '1px solid var(--border-color)' }}
+                  >
+                    <option value="">All Categories</option>
+                    <option value="travel">Travel</option>
+                    <option value="meals">Meals</option>
+                    <option value="office">Office Supplies</option>
+                    <option value="transport">Transport</option>
+                    <option value="accommodation">Accommodation</option>
+                    <option value="other">Other</option>
+                  </select>
+                  
+                  <input
+                    type="number"
+                    placeholder="Min Amount"
+                    value={filters.amountMin}
+                    onChange={(e) => setFilters({ ...filters, amountMin: e.target.value })}
+                    style={{ padding: '0.5rem', borderRadius: '8px', border: '1px solid var(--border-color)' }}
+                  />
+                  
+                  <input
+                    type="number"
+                    placeholder="Max Amount"
+                    value={filters.amountMax}
+                    onChange={(e) => setFilters({ ...filters, amountMax: e.target.value })}
+                    style={{ padding: '0.5rem', borderRadius: '8px', border: '1px solid var(--border-color)' }}
+                  />
+                  
+                  <input
+                    type="date"
+                    value={filters.dateFrom}
+                    onChange={(e) => setFilters({ ...filters, dateFrom: e.target.value })}
+                    style={{ padding: '0.5rem', borderRadius: '8px', border: '1px solid var(--border-color)' }}
+                  />
+                  
+                  <input
+                    type="date"
+                    value={filters.dateTo}
+                    onChange={(e) => setFilters({ ...filters, dateTo: e.target.value })}
+                    style={{ padding: '0.5rem', borderRadius: '8px', border: '1px solid var(--border-color)' }}
+                  />
+                </div>
+                
+                <button 
+                  onClick={() => setFilters({
+                    search: '', category: '', amountMin: '', amountMax: '', dateFrom: '', dateTo: ''
+                  })}
+                  className="btn-secondary"
+                  style={{ marginTop: '1rem' }}
+                >
+                  Clear Filters
+                </button>
+              </div>
+
+              {loading ? (
+                <div style={{ textAlign: 'center', padding: '2rem' }}>
+                  <LoadingSpinner size="large" />
+                  <p>Loading expenses...</p>
+                </div>
+              ) : filteredExpenses.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '2rem' }}>
+                  <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📋</div>
+                  <h3>No expenses found</h3>
+                  <p>
+                    {activeTab === 'pending' 
+                      ? "No expenses are currently pending your approval." 
+                      : "No expenses match your current filters."}
+                  </p>
+                </div>
+              ) : (
             <div className="table-responsive">
               <table className="approval-table">
                 <thead>
@@ -356,9 +377,9 @@ const ManagerDashboard = ({ user }) => {
                             <span 
                               key={index}
                               className={`approver ${approver.status}`}
-                              title={`${approver.name} - ${approver.status}`}
+                              title={`${approver.name || 'Unknown'} - ${approver.status}`}
                             >
-                              {approver.name.split(' ').map(n => n[0]).join('')}
+                              {approver.name ? approver.name.split(' ').map(n => n[0]).join('') : '??'}
                             </span>
                           ))}
                         </div>
@@ -407,7 +428,9 @@ const ManagerDashboard = ({ user }) => {
                 </tbody>
               </table>
             </div>
-          )}
+              )}
+            </div>
+          </div>
         </div>
       </div>
 

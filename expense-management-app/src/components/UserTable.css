@@ -16,19 +16,23 @@
 }
 
 .user-table th {
-  background: var(--background-color);
-  color: var(--text-primary);
-  font-weight: 600;
+  background: #f8fafc;
+  color: #1e293b;
+  font-weight: 700;
   padding: 1rem 0.75rem;
   text-align: left;
-  border-bottom: 2px solid var(--border-color);
+  border-bottom: 2px solid #e2e8f0;
   white-space: nowrap;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  font-size: 0.875rem;
 }
 
 .user-table td {
   padding: 1rem 0.75rem;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid #e2e8f0;
   vertical-align: middle;
+  color: #374151;
+  font-weight: 500;
 }
 
 .user-table tr:hover {
@@ -45,50 +49,65 @@
 }
 
 .user-name {
-  font-weight: 500;
-  color: var(--text-primary);
+  font-weight: 600;
+  color: #1e293b;
+  font-size: 0.95rem;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .role-badge {
-  padding: 0.25rem 0.5rem;
-  border-radius: 12px;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
   font-size: 0.75rem;
-  font-weight: 500;
+  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.025em;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .role-badge.admin {
-  background-color: #e8f5e8;
-  color: var(--success-dark);
+  background-color: rgba(239, 68, 68, 0.15);
+  color: #b91c1c;
+  border: 1px solid rgba(239, 68, 68, 0.2);
 }
 
 .role-badge.manager {
-  background-color: #e3f2fd;
-  color: var(--secondary-dark);
+  background-color: rgba(245, 158, 11, 0.15);
+  color: #c2410c;
+  border: 1px solid rgba(245, 158, 11, 0.2);
 }
 
 .role-badge.employee {
-  background-color: #fff3e0;
-  color: var(--warning-dark);
+  background-color: rgba(34, 197, 94, 0.15);
+  color: #15803d;
+  border: 1px solid rgba(34, 197, 94, 0.2);
 }
 
 .status-badge {
-  padding: 0.25rem 0.5rem;
-  border-radius: 12px;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
   font-size: 0.75rem;
-  font-weight: 500;
-  text-transform: uppercase;
+  font-weight: 600;
+  text-transform: capitalize;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .status-badge.active {
-  background-color: #e8f5e8;
-  color: var(--success-dark);
+  background-color: rgba(34, 197, 94, 0.15);
+  color: #15803d;
+  border: 1px solid rgba(34, 197, 94, 0.2);
 }
 
 .status-badge.inactive {
-  background-color: #ffebee;
-  color: var(--danger-color);
+  background-color: rgba(156, 163, 175, 0.15);
+  color: #4b5563;
+  border: 1px solid rgba(156, 163, 175, 0.2);
+}
+
+.status-badge.suspended {
+  background-color: rgba(239, 68, 68, 0.15);
+  color: #b91c1c;
+  border: 1px solid rgba(239, 68, 68, 0.2);
 }
 
 .action-buttons {
@@ -194,4 +213,17 @@
     height: 28px;
     font-size: 0.75rem;
   }
+}
+
+/* Additional User Display Styling */
+.manager-name {
+  color: #374151;
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.user-email {
+  color: #4b5563;
+  font-size: 0.875rem;
+  font-weight: 500;
 }

@@ -24,8 +24,6 @@ const Landing = () => {
           </Link>
           <div className="nav-menu">
             <a href="#features" className="nav-link">Features</a>
-            <a href="#pricing" className="nav-link">Pricing</a>
-            <a href="#contact" className="nav-link">Contact</a>
           </div>
           <div className="landing-nav-buttons">
             <Link to="/login" className="btn btn-ghost">
@@ -218,7 +216,7 @@ const Landing = () => {
                 Start Free Trial
               </Link>
               <Link to="/login" className="btn btn-secondary btn-lg">
-                Contact Sales
+                Sign In
               </Link>
             </div>
           </div>
@@ -253,7 +251,7 @@ const Landing = () => {
               <h4>Product</h4>
               <ul>
                 <li><a href="#">Features</a></li>
-                <li><a href="#">Pricing</a></li>
+
                 <li><a href="#">API</a></li>
                 <li><a href="#">Integrations</a></li>
               </ul>
@@ -265,7 +263,7 @@ const Landing = () => {
                 <li><a href="#">About</a></li>
                 <li><a href="#">Blog</a></li>
                 <li><a href="#">Careers</a></li>
-                <li><a href="#">Contact</a></li>
+
               </ul>
             </div>
             

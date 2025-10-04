@@ -148,7 +148,9 @@ const UserTable = ({
                       className="inline-edit"
                     />
                   ) : (
-                    user.managerName || '—'
+                    <span className="manager-name">
+                      {user.managerName || user.manager?.name || '—'}
+                    </span>
                   )}
                 </td>
                 
