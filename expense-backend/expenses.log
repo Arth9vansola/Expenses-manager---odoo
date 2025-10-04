@@ -27,3 +27,9 @@ Successfully fetched 268 countries with 162 currencies
 Google Vision API not available (pip install google-cloud-vision)
 AWS Textract not available (pip install boto3)
 No OCR providers available - using enhanced mock mode
+Google Vision API not available (pip install google-cloud-vision)
+AWS Textract not available (pip install boto3)
+No OCR providers available - using enhanced mock mode
+Google Vision API not available (pip install google-cloud-vision)
+AWS Textract not available (pip install boto3)
+No OCR providers available - using enhanced mock mode
