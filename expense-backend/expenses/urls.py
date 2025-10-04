@@ -5,10 +5,23 @@ from .authentication import SignupView, LoginView, LogoutView, UserManagementVie
 from .expense_api import ExpenseSubmissionView, ExpenseListView, ExpenseDetailView
 from .approval_api import PendingApprovalsView, ExpenseReviewView, ApprovalHistoryView, ApprovalRulesView
 from .approval_rule_api import (
-    ApprovalRuleListCreateView, 
+    ApprovalRuleListCreateView,
     ApprovalRuleDetailView, 
     ApprovalRuleBulkOperationsView,
     ApprovalRuleValidationView
+)
+
+# Import currency and OCR API views
+from .currency_ocr_api import (
+    get_countries_and_currencies,
+    get_exchange_rate,
+    convert_currency,
+    get_multiple_exchange_rates,
+    extract_receipt_text,
+    extract_expense_data,
+    get_ocr_providers,
+    clear_currency_cache,
+    get_service_status
 )
 
 router = DefaultRouter()
@@ -45,6 +58,21 @@ urlpatterns = [
     path('api/approval-rules/management/<uuid:rule_id>/', ApprovalRuleDetailView.as_view(), name='approval-rule-detail'),
     path('api/approval-rules/bulk/', ApprovalRuleBulkOperationsView.as_view(), name='approval-rules-bulk'),
     path('api/approval-rules/validate/', ApprovalRuleValidationView.as_view(), name='approval-rules-validate'),
+    
+    # Step 15: Currency Integration APIs
+    path('api/currencies/countries/', get_countries_and_currencies, name='currencies-countries'),
+    path('api/currencies/exchange-rate/', get_exchange_rate, name='currency-exchange-rate'),
+    path('api/currencies/convert/', convert_currency, name='currency-convert'),
+    path('api/currencies/exchange-rates/', get_multiple_exchange_rates, name='currency-multiple-rates'),
+    path('api/currencies/cache/', clear_currency_cache, name='currency-clear-cache'),
+    
+    # Step 15: OCR Integration APIs
+    path('api/ocr/extract-text/', extract_receipt_text, name='ocr-extract-text'),
+    path('api/ocr/extract-expense/', extract_expense_data, name='ocr-extract-expense'),
+    path('api/ocr/providers/', get_ocr_providers, name='ocr-providers'),
+    
+    # Step 15: Integration Service Status
+    path('api/integrations/status/', get_service_status, name='integrations-status'),
     
     # API router
     path('api/', include(router.urls)),
