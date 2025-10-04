@@ -24,6 +24,27 @@ from .currency_ocr_api import (
     get_service_status
 )
 
+# Step 16: Import secure API endpoints with permissions and validation
+from .secure_user_api import (
+    users_list_create,
+    user_detail,
+    user_roles,
+    current_user_profile
+)
+from .secure_expense_api import (
+    expenses_list_create,
+    expense_detail,
+    submit_expense,
+    approve_expense,
+    reject_expense
+)
+from .secure_approval_rules_api import (
+    approval_rules_list_create,
+    approval_rule_detail,
+    validate_approval_rule,
+    approval_rule_templates
+)
+
 router = DefaultRouter()
 router.register(r'companies', views.CompanyViewSet)
 router.register(r'users', views.UserViewSet)
@@ -73,6 +94,25 @@ urlpatterns = [
     
     # Step 15: Integration Service Status
     path('api/integrations/status/', get_service_status, name='integrations-status'),
+    
+    # Step 16: Secure User Management API with Permissions
+    path('api/secure/users/', users_list_create, name='secure-users-list-create'),
+    path('api/secure/users/<uuid:pk>/', user_detail, name='secure-user-detail'),
+    path('api/secure/users/roles/', user_roles, name='secure-user-roles'),
+    path('api/secure/users/profile/', current_user_profile, name='secure-current-user-profile'),
+    
+    # Step 16: Secure Expense Management API with Permissions
+    path('api/secure/expenses/', expenses_list_create, name='secure-expenses-list-create'),
+    path('api/secure/expenses/<uuid:pk>/', expense_detail, name='secure-expense-detail'),
+    path('api/secure/expenses/<uuid:pk>/submit/', submit_expense, name='secure-expense-submit'),
+    path('api/secure/expenses/<uuid:pk>/approve/', approve_expense, name='secure-expense-approve'),
+    path('api/secure/expenses/<uuid:pk>/reject/', reject_expense, name='secure-expense-reject'),
+    
+    # Step 16: Secure Approval Rules Management API with Permissions
+    path('api/secure/approval-rules/', approval_rules_list_create, name='secure-approval-rules-list-create'),
+    path('api/secure/approval-rules/<uuid:pk>/', approval_rule_detail, name='secure-approval-rule-detail'),
+    path('api/secure/approval-rules/validate/', validate_approval_rule, name='secure-approval-rule-validate'),
+    path('api/secure/approval-rules/templates/', approval_rule_templates, name='secure-approval-rule-templates'),
     
     # API router
     path('api/', include(router.urls)),

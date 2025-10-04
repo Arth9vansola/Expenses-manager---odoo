@@ -1,35 +1,53 @@
 # Expenses-manager---odoo
 
 ## team details
-- Team Name: Fantastic Four
+# 🏷️ Team Details
 
-- Team Members:
+## Team Name  
+**Fantastic Four**
 
-   1) Team Leader Name: Arth Vansola
-      Email: arthvansola@gmail.com
-      Phone: 7862013542
-      Passing Year: 2026
+---
 
-   2) Name: Zeel Patel
-      Email: zpatel3310@gmail.com
-      Phone: 7990379170
-      Passing Year: 2026
+## 👥 Team Members  
 
-   3) Name: Nikhil Chavda
-      Email: nikhilsinhchavda77@gmail.com
-      Phone: 7487087591
-      Passing Year: 2026
+### 🥇 Team Leader  
+- **Name:** Arth Vansola  
+- **Email:** [arthvansola@gmail.com](mailto:arthvansola@gmail.com)  
+- **Phone:** 7862013542  
+- **Passing Year:** 2026  
 
-   4) Name: Chaitanya Darji
-      Email: chaitanyadarji295@gmail.com
-      Phone: 8487060930
-      Passing Year: 2026
+### 👤 Member 2  
+- **Name:** Zeel Patel  
+- **Email:** [zpatel3310@gmail.com](mailto:zpatel3310@gmail.com)  
+- **Phone:** 7990379170  
+- **Passing Year:** 2026  
 
-- Problem statement name: Expense Management
+### 👤 Member 3  
+- **Name:** Nikhil Chavda  
+- **Email:** [nikhilsinhchavda77@gmail.com](mailto:nikhilsinhchavda77@gmail.com)  
+- **Phone:** 7487087591  
+- **Passing Year:** 2026  
 
-- Reviewer name: Aman Patel (ampa)
+### 👤 Member 4  
+- **Name:** Chaitanya Darji  
+- **Email:** [chaitanyadarji295@gmail.com](mailto:chaitanyadarji295@gmail.com)  
+- **Phone:** 8487060930  
+- **Passing Year:** 2026  
 
-- Video presentation link: 
+---
+
+## 📌 Problem Statement  
+**Expense Management**
+
+---
+
+## 👨‍💻 Reviewer  
+- **Name:** Aman Patel (ampa)
+
+---
+
+## 🎥 Video Presentation  
+- [Demo Link](https://www.youtube.com/watch?v=example)
 
 
 
