@@ -3,7 +3,15 @@ import Modal from '../components/Modal';
 import ExpenseForm from '../components/ExpenseForm';
 import ExpenseTable from '../components/ExpenseTable';
 import { LoadingSpinner } from '../components/FormComponents';
-import { expenseAPI, formatCurrency, getStatusColor } from '../api/expenses';
+import { 
+  getAllExpenses, 
+  createExpense, 
+  updateExpense, 
+  deleteExpense, 
+  submitExpense,
+  formatCurrency, 
+  getStatusColor 
+} from '../api/expensesLive';
 import '../styles/dashboard.css';
 import './EmployeeDashboard.css';
 
@@ -23,9 +31,19 @@ const EmployeeDashboard = ({ user }) => {
   const loadExpenses = async () => {
     try {
       setLoading(true);
-      const expensesData = await expenseAPI.getExpenses(user.id);
-      setExpenses(expensesData);
+      console.log('Loading expenses for user:', user.id);
+      
+      // Get expenses for the current user
+      const response = await getAllExpenses({ user_id: user.id });
+      
+      if (response.success) {
+        setExpenses(response.data.results || response.data);
+        console.log('Expenses loaded:', response.data);
+      } else {
+        throw new Error(response.error || 'Failed to load expenses');
+      }
     } catch (error) {
+      console.error('Error loading expenses:', error);
       showNotification('Failed to load expenses', 'error');
     } finally {
       setLoading(false);
@@ -39,23 +57,41 @@ const EmployeeDashboard = ({ user }) => {
 
   const handleAddExpense = async (expenseData) => {
     try {
-      const newExpense = await expenseAPI.createExpense(expenseData);
-      setExpenses([newExpense, ...expenses]);
-      setShowAddModal(false);
-      showNotification('Expense saved as draft successfully');
+      console.log('Creating expense:', expenseData);
+      
+      const response = await createExpense(expenseData);
+      
+      if (response.success) {
+        setExpenses([response.data, ...expenses]);
+        setShowAddModal(false);
+        showNotification('Expense saved as draft successfully');
+        console.log('Expense created:', response.data);
+      } else {
+        throw new Error(response.error || 'Failed to create expense');
+      }
     } catch (error) {
+      console.error('Error creating expense:', error);
       throw error;
     }
   };
 
   const handleEditExpense = async (expenseData) => {
     try {
-      const updatedExpense = await expenseAPI.updateExpense(selectedExpense.id, expenseData);
-      setExpenses(expenses.map(e => e.id === selectedExpense.id ? updatedExpense : e));
-      setShowEditModal(false);
-      setSelectedExpense(null);
-      showNotification('Expense updated successfully');
+      console.log('Updating expense:', selectedExpense.id, expenseData);
+      
+      const response = await updateExpense(selectedExpense.id, expenseData);
+      
+      if (response.success) {
+        setExpenses(expenses.map(e => e.id === selectedExpense.id ? response.data : e));
+        setShowEditModal(false);
+        setSelectedExpense(null);
+        showNotification('Expense updated successfully');
+        console.log('Expense updated:', response.data);
+      } else {
+        throw new Error(response.error || 'Failed to update expense');
+      }
     } catch (error) {
+      console.error('Error updating expense:', error);
       throw error;
     }
   };
@@ -78,10 +114,19 @@ const EmployeeDashboard = ({ user }) => {
   const handleDeleteExpense = async (expense) => {
     if (window.confirm(`Are you sure you want to delete "${expense.description}"?`)) {
       try {
-        await expenseAPI.deleteExpense(expense.id);
-        setExpenses(expenses.filter(e => e.id !== expense.id));
-        showNotification('Expense deleted successfully');
+        console.log('Deleting expense:', expense.id);
+        
+        const response = await deleteExpense(expense.id);
+        
+        if (response.success) {
+          setExpenses(expenses.filter(e => e.id !== expense.id));
+          showNotification('Expense deleted successfully');
+          console.log('Expense deleted successfully');
+        } else {
+          throw new Error(response.error || 'Failed to delete expense');
+        }
       } catch (error) {
+        console.error('Error deleting expense:', error);
         showNotification('Failed to delete expense', 'error');
       }
     }
@@ -90,10 +135,19 @@ const EmployeeDashboard = ({ user }) => {
   const handleSubmitExpense = async (expense) => {
     if (window.confirm(`Submit "${expense.description}" for approval?`)) {
       try {
-        const submittedExpense = await expenseAPI.submitExpense(expense.id);
-        setExpenses(expenses.map(e => e.id === expense.id ? submittedExpense : e));
-        showNotification('Expense submitted for approval');
+        console.log('Submitting expense for approval:', expense.id);
+        
+        const response = await submitExpense(expense.id);
+        
+        if (response.success) {
+          setExpenses(expenses.map(e => e.id === expense.id ? response.data : e));
+          showNotification('Expense submitted for approval');
+          console.log('Expense submitted successfully:', response.data);
+        } else {
+          throw new Error(response.error || 'Failed to submit expense');
+        }
       } catch (error) {
+        console.error('Error submitting expense:', error);
         showNotification('Failed to submit expense', 'error');
       }
     }

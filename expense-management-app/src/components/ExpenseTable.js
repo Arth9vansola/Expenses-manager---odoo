@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { LoadingSpinner } from './FormComponents';
-import { getStatusColor, formatCurrency, formatDate } from '../api/expenses';
+import { getStatusColor, formatCurrency, formatDate } from '../api/expensesLive';
 import './ExpenseTable.css';
 
 const ExpenseTable = ({ 

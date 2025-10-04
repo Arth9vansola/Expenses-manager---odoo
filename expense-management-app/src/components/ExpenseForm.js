@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FormInput, FormSelect, LoadingSpinner } from './FormComponents';
-import { expenseCategories, currencies } from '../api/expenses';
-import { ocrService, previewFile } from '../api/ocr';
+import { expenseCategories, currencies } from '../api/expensesLive';
+import { extractReceiptText, extractExpenseData, previewFile } from '../api/ocrLive';
 import { validateRequired } from '../api/validation';
 import './ExpenseForm.css';
 
@@ -55,9 +55,17 @@ const ExpenseForm = ({
   const handleFileChange = async (file) => {
     if (!file) return;
 
-    const validation = ocrService.validateReceipt(file);
-    if (!validation.valid) {
-      setErrors({ receipt: validation.error });
+    // Simple file validation (moved from ocrService)
+    const maxSize = 10 * 1024 * 1024; // 10MB
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'application/pdf'];
+    
+    if (!allowedTypes.includes(file.type)) {
+      setErrors({ receipt: 'Please upload an image (JPG, PNG, GIF) or PDF file.' });
+      return;
+    }
+    
+    if (file.size > maxSize) {
+      setErrors({ receipt: 'File size must be less than 10MB.' });
       return;
     }
 
@@ -104,16 +112,28 @@ const ExpenseForm = ({
 
     setOcrProcessing(true);
     try {
-      const result = await ocrService.processReceipt(formData.receiptFile);
+      console.log('Processing OCR for receipt:', formData.receiptFile.name);
       
-      if (result.success) {
-        setOcrResult(result.data);
-        // Don't auto-fill, let user decide which fields to use
+      // First extract text from the receipt
+      const textResult = await extractReceiptText(formData.receiptFile);
+      
+      if (textResult.success) {
+        // Then extract expense data from the text
+        const expenseResult = await extractExpenseData(textResult.data.text);
+        
+        if (expenseResult.success) {
+          setOcrResult(expenseResult.data);
+          console.log('OCR processing successful:', expenseResult.data);
+          // Don't auto-fill, let user decide which fields to use
+        } else {
+          throw new Error(expenseResult.error || 'Failed to extract expense data');
+        }
       } else {
-        setErrors({ ocr: 'Failed to process receipt. Please enter details manually.' });
+        throw new Error(textResult.error || 'Failed to extract text from receipt');
       }
     } catch (error) {
-      setErrors({ ocr: 'OCR processing failed. Please try again.' });
+      console.error('OCR processing error:', error);
+      setErrors({ ocr: 'OCR processing failed. Please try again or enter details manually.' });
     } finally {
       setOcrProcessing(false);
     }

@@ -1,8 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import Modal from '../components/Modal';
 import { LoadingSpinner } from '../components/FormComponents';
-import { expenseAPI, formatCurrency, getStatusColor } from '../api/expenses';
-import { approvalAPI } from '../api/approval';
+import { 
+  getAllExpenses, 
+  approveExpense, 
+  rejectExpense,
+  formatCurrency, 
+  getStatusColor 
+} from '../api/expensesLive';
 import '../styles/dashboard.css';
 import './ManagerDashboard.css';
 
@@ -32,18 +37,24 @@ const ManagerDashboard = ({ user }) => {
   const loadExpenses = async () => {
     try {
       setLoading(true);
-      // Get expenses pending approval for this manager
-      const managerId = user.id || user.userId || '2'; // Fallback to manager user
-      const [pending, all] = await Promise.all([
-        approvalAPI.getPendingApprovals(managerId).catch(() => []),
-        approvalAPI.getTeamExpenses(managerId).catch(() => [])
+      console.log('Loading expenses for manager:', user.id);
+      
+      // Get all expenses and filter for pending and team expenses
+      const [pendingResponse, allResponse] = await Promise.all([
+        getAllExpenses({ status: 'submitted' }).catch(() => ({ success: false, data: [] })),
+        getAllExpenses({ manager_id: user.id }).catch(() => ({ success: false, data: [] }))
       ]);
       
-      setPendingExpenses(pending || []);
-      setAllExpenses(all || []);
+      const pendingData = pendingResponse.success ? (pendingResponse.data.results || pendingResponse.data || []) : [];
+      const allData = allResponse.success ? (allResponse.data.results || allResponse.data || []) : [];
+      
+      setPendingExpenses(pendingData);
+      setAllExpenses(allData);
+      
+      console.log('Manager expenses loaded - Pending:', pendingData.length, 'All:', allData.length);
     } catch (error) {
       console.error('Error loading manager expenses:', error);
-      showNotification('Failed to load expenses. Using fallback data.', 'error');
+      showNotification('Failed to load expenses', 'error');
       setPendingExpenses([]);
       setAllExpenses([]);
     } finally {
@@ -82,15 +93,27 @@ const ManagerDashboard = ({ user }) => {
         approverId: user.id
       };
 
-      const result = await approvalAPI.processApproval(approvalData);
+      let result;
       
-      // Update local state
-      setPendingExpenses(pendingExpenses.filter(e => e.id !== selectedExpense.id));
+      if (approvalAction === 'approve') {
+        result = await approveExpense(selectedExpense.id, approvalComment.trim());
+      } else {
+        result = await rejectExpense(selectedExpense.id, approvalComment.trim());
+      }
       
-      // Update all expenses list
-      setAllExpenses(allExpenses.map(e => 
-        e.id === selectedExpense.id ? { ...e, ...result } : e
-      ));
+      if (result.success) {
+        // Update local state
+        setPendingExpenses(pendingExpenses.filter(e => e.id !== selectedExpense.id));
+        
+        // Update all expenses list
+        setAllExpenses(allExpenses.map(e => 
+          e.id === selectedExpense.id ? { ...e, ...result.data } : e
+        ));
+        
+        console.log('Approval processed successfully:', result.data);
+      } else {
+        throw new Error(result.error || 'Failed to process approval');
+      }
 
       setShowApprovalModal(false);
       setSelectedExpense(null);
@@ -101,6 +124,7 @@ const ManagerDashboard = ({ user }) => {
       showNotification(`Expense ${actionText} successfully`);
       
     } catch (error) {
+      console.error('Error processing approval:', error);
       showNotification('Failed to process approval', 'error');
     }
   };

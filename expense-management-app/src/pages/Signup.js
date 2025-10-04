@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { FormInput, FormSelect, LoadingSpinner, PasswordStrength } from '../components/FormComponents';
 import { fetchCountries, getCountryCurrency } from '../api/countries';
+import { registerUser } from '../api/usersLive';
 import { 
   validateEmail, 
   validatePassword, 
@@ -144,24 +145,34 @@ const Signup = ({ onLogin }) => {
 
       console.log('Signup form submitted:', userData);
       
-      // Mock successful signup
-      const mockUser = {
-        id: Date.now(),
-        name: formData.name,
-        email: formData.email,
-        role: formData.role,
-        company: companyData
-      };
-
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
-
-      // On successful signup, login the user
-      onLogin(mockUser);
-      navigate('/dashboard');
+      // Call live backend registration API
+      const response = await registerUser(userData);
+      
+      if (response.success) {
+        console.log('Signup successful:', response.data);
+        
+        // The registerUser function already stores the token if auto-login is enabled
+        // Pass the user data to the parent component
+        onLogin(response.data.user);
+        navigate('/dashboard');
+      } else {
+        // Handle registration failure
+        setErrors({ submit: response.error || 'Signup failed. Please try again.' });
+      }
 
     } catch (error) {
-      setErrors({ submit: 'Signup failed. Please try again.' });
+      console.error('Signup error:', error);
+      
+      // Handle specific error types
+      if (error.message && error.message.includes('400')) {
+        setErrors({ submit: 'Invalid registration data. Please check all fields.' });
+      } else if (error.message && error.message.includes('409')) {
+        setErrors({ submit: 'An account with this email already exists.' });
+      } else if (error.message && error.message.includes('network')) {
+        setErrors({ submit: 'Network error. Please check your connection and try again.' });
+      } else {
+        setErrors({ submit: 'Signup failed. Please try again.' });
+      }
     } finally {
       setLoading(false);
     }

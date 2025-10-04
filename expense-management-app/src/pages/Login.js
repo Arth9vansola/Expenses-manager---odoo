@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { FormInput, LoadingSpinner } from '../components/FormComponents';
 import { validateEmail, validateRequired } from '../api/validation';
+import { loginUser, requestPasswordReset } from '../api/usersLive';
 import './Login.css';
 
 const Login = ({ onLogin }) => {
@@ -60,41 +61,57 @@ const Login = ({ onLogin }) => {
     }
 
     setLoading(true);
+    setErrors({}); // Clear previous errors
 
     try {
       console.log('Login form submitted:', formData);
+      console.log('Making API call to login...');
       
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      // Call live backend authentication API
+      const response = await loginUser({
+        email: formData.email,
+        password: formData.password
+      });
       
-      // Simple login validation - in production, this would be an API call
-      if (formData.email && formData.password) {
-        // Determine role based on email domain or other logic
-        let role = 'employee';
-        if (formData.email.includes('admin')) {
-          role = 'admin';
-        } else if (formData.email.includes('manager')) {
-          role = 'manager';
-        }
-
-        const mockUser = {
-          id: Date.now(),
-          name: formData.email.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
-          email: formData.email,
-          role: role,
-          company: { 
-            name: 'Your Company', 
-            country: { name: 'United States' } 
-          }
-        };
-        onLogin(mockUser);
+      console.log('Login API response:', response);
+      
+      if (response && response.token) {
+        console.log('Login successful:', response);
+        
+        // Store the token (this should be handled by the API function)
+        localStorage.setItem('authToken', response.token);
+        
+        // Pass the user data to the parent component
+        onLogin(response.user);
         navigate('/dashboard');
+      } else if (response && response.error) {
+        // Handle authentication failure with specific error message
+        console.log('Login failed with error:', response.error);
+        setErrors({ submit: response.error });
       } else {
+        // Handle authentication failure
+        console.log('Login failed - no token in response');
         setErrors({ submit: 'Invalid email or password. Please try again.' });
       }
 
     } catch (error) {
-      setErrors({ submit: 'Login failed. Please try again.' });
+      console.error('Login error:', error);
+      console.error('Error details:', {
+        message: error.message,
+        stack: error.stack,
+        name: error.name
+      });
+      
+      // Handle specific error types
+      if (error.message && error.message.includes('401')) {
+        setErrors({ submit: 'Invalid email or password. Please check your credentials.' });
+      } else if (error.message && (error.message.includes('network') || error.message.includes('NetworkError') || error.message.includes('Failed to fetch'))) {
+        setErrors({ submit: 'Network error. Please check your connection and try again.' });
+      } else if (error.message && error.message.includes('CORS')) {
+        setErrors({ submit: 'Connection error. Please try again.' });
+      } else {
+        setErrors({ submit: `Login failed: ${error.message || 'Please try again.'}` });
+      }
     } finally {
       setLoading(false);
     }
@@ -109,14 +126,30 @@ const Login = ({ onLogin }) => {
     }
 
     setLoading(true);
+    setErrors({ forgot: '' }); // Clear previous errors
     
     try {
-      // Simulate forgot password API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      setForgotPasswordSent(true);
-      setErrors({ forgot: '' });
+      console.log('Password reset requested for:', forgotPasswordEmail);
+      
+      // Call live backend password reset API
+      const response = await requestPasswordReset(forgotPasswordEmail);
+      
+      if (response.success) {
+        console.log('Password reset email sent successfully');
+        setForgotPasswordSent(true);
+      } else {
+        setErrors({ forgot: response.error || 'Failed to send reset email. Please try again.' });
+      }
     } catch (error) {
-      setErrors({ forgot: 'Failed to send reset email. Please try again.' });
+      console.error('Password reset error:', error);
+      
+      if (error.message && error.message.includes('404')) {
+        setErrors({ forgot: 'No account found with this email address.' });
+      } else if (error.message && error.message.includes('network')) {
+        setErrors({ forgot: 'Network error. Please check your connection and try again.' });
+      } else {
+        setErrors({ forgot: 'Failed to send reset email. Please try again.' });
+      }
     } finally {
       setLoading(false);
     }
