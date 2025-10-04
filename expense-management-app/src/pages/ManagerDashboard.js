@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Modal from '../components/Modal';
 import { LoadingSpinner } from '../components/FormComponents';
 import { 
@@ -30,11 +30,7 @@ const ManagerDashboard = ({ user }) => {
     dateTo: ''
   });
 
-  useEffect(() => {
-    loadExpenses();
-  }, [user]);
-
-  const loadExpenses = async () => {
+  const loadExpenses = useCallback(async () => {
     try {
       setLoading(true);
       console.log('Loading expenses for manager:', user.id);
@@ -76,7 +72,11 @@ const ManagerDashboard = ({ user }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
+
+  useEffect(() => {
+    loadExpenses();
+  }, [loadExpenses]);
 
   const showNotification = (message, type = 'success') => {
     setNotification({ message, type });
@@ -102,13 +102,6 @@ const ManagerDashboard = ({ user }) => {
     }
 
     try {
-      const approvalData = {
-        expenseId: selectedExpense.id,
-        action: approvalAction,
-        comment: approvalComment.trim(),
-        approverId: user.id
-      };
-
       let result;
       
       if (approvalAction === 'approve') {
