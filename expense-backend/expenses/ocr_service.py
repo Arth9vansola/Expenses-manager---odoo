@@ -359,3 +359,16 @@ class ReceiptOCRService:
 
 # Service instance
 ocr_service = ReceiptOCRService(use_tesseract=True)
+
+# Module-level functions for backward compatibility and testing
+def extract_text_from_image(image_path: str) -> str:
+    """
+    Extract text from image using OCR service.
+    """
+    return ocr_service.extract_text_tesseract(image_path)
+
+def extract_expense_data_from_image(image_path: str) -> Dict:
+    """
+    Extract expense data from receipt image.
+    """
+    return ocr_service.process_receipt(image_path)

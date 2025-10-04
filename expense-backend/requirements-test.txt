@@ -1,0 +1,15 @@
+# Step 17: Testing Requirements
+# =============================
+# Additional packages needed for comprehensive testing
+
+pytest>=7.0.0
+pytest-django>=4.5.0
+pytest-cov>=4.0.0
+factory-boy>=3.2.0
+freezegun>=1.2.0
+responses>=0.20.0
+Pillow>=9.0.0
+
+# For mocking and testing
+mock>=4.0.0
+httpx>=0.23.0

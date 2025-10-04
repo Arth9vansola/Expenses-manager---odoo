@@ -520,7 +520,7 @@ def submit_expense(request, pk):
                     "approval_rule": {
                         "id": approval_rule.id,
                         "name": approval_rule.name,
-                        "steps_count": approval_rule.approval_config.get('steps', 0) if approval_rule.approval_config else 0
+                        "steps_count": len(approval_rule.approvers) if approval_rule.approvers else 0
                     }
                 }
             }, status=status.HTTP_200_OK)
@@ -720,13 +720,12 @@ def find_applicable_approval_rule(expense):
         ).order_by('-priority')
         
         for rule in rules:
-            amount_range = rule.amount_range or {}
-            min_amount = Decimal(str(amount_range.get('min_amount', 0)))
-            max_amount = amount_range.get('max_amount')
+            min_amount = rule.min_amount or Decimal('0')
+            max_amount = rule.max_amount
             
             # Check if expense amount fits this rule
             if expense.amount >= min_amount:
-                if max_amount is None or expense.amount <= Decimal(str(max_amount)):
+                if max_amount is None or expense.amount <= max_amount:
                     return rule
         
         return None
