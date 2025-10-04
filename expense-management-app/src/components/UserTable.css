@@ -1,0 +1,197 @@
+.user-table-container {
+  background: var(--surface-color);
+  border-radius: 8px;
+  box-shadow: var(--box-shadow);
+  overflow: hidden;
+}
+
+.table-responsive {
+  overflow-x: auto;
+}
+
+.user-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.user-table th {
+  background: var(--background-color);
+  color: var(--text-primary);
+  font-weight: 600;
+  padding: 1rem 0.75rem;
+  text-align: left;
+  border-bottom: 2px solid var(--border-color);
+  white-space: nowrap;
+}
+
+.user-table td {
+  padding: 1rem 0.75rem;
+  border-bottom: 1px solid var(--border-color);
+  vertical-align: middle;
+}
+
+.user-table tr:hover {
+  background-color: rgba(52, 152, 219, 0.05);
+}
+
+.user-table tr.editing {
+  background-color: rgba(52, 152, 219, 0.1);
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-name {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.role-badge {
+  padding: 0.25rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.role-badge.admin {
+  background-color: #e8f5e8;
+  color: var(--success-dark);
+}
+
+.role-badge.manager {
+  background-color: #e3f2fd;
+  color: var(--secondary-dark);
+}
+
+.role-badge.employee {
+  background-color: #fff3e0;
+  color: var(--warning-dark);
+}
+
+.status-badge {
+  padding: 0.25rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.status-badge.active {
+  background-color: #e8f5e8;
+  color: var(--success-dark);
+}
+
+.status-badge.inactive {
+  background-color: #ffebee;
+  color: var(--danger-color);
+}
+
+.action-buttons {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.btn-icon {
+  background: none;
+  border: none;
+  padding: 0.375rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  transition: background-color 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 32px;
+}
+
+.btn-icon.edit {
+  color: var(--secondary-color);
+}
+
+.btn-icon.edit:hover {
+  background-color: rgba(52, 152, 219, 0.1);
+}
+
+.btn-icon.delete {
+  color: var(--danger-color);
+}
+
+.btn-icon.delete:hover {
+  background-color: rgba(231, 76, 60, 0.1);
+}
+
+.btn-icon.reset {
+  color: var(--warning-color);
+}
+
+.btn-icon.reset:hover {
+  background-color: rgba(243, 156, 18, 0.1);
+}
+
+.btn-icon.save {
+  color: var(--success-color);
+  font-weight: bold;
+}
+
+.btn-icon.save:hover {
+  background-color: rgba(39, 174, 96, 0.1);
+}
+
+.btn-icon.cancel {
+  color: var(--danger-color);
+  font-weight: bold;
+}
+
+.btn-icon.cancel:hover {
+  background-color: rgba(231, 76, 60, 0.1);
+}
+
+.inline-edit {
+  margin: 0;
+  min-width: 120px;
+}
+
+.inline-edit .form-input {
+  padding: 0.375rem 0.5rem;
+  font-size: 0.875rem;
+  border: 1px solid var(--secondary-color);
+}
+
+.table-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  color: var(--text-secondary);
+}
+
+@media (max-width: 768px) {
+  .user-table {
+    font-size: 0.75rem;
+  }
+  
+  .user-table th,
+  .user-table td {
+    padding: 0.5rem 0.375rem;
+  }
+  
+  .action-buttons {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  
+  .btn-icon {
+    min-width: 28px;
+    height: 28px;
+    font-size: 0.75rem;
+  }
+}
