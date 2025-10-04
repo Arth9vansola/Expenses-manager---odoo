@@ -41,12 +41,28 @@ const ManagerDashboard = ({ user }) => {
       
       // Get all expenses and filter for pending and team expenses
       const [pendingResponse, allResponse] = await Promise.all([
-        getAllExpenses({ status: 'submitted' }).catch(() => ({ success: false, data: [] })),
-        getAllExpenses({ manager_id: user.id }).catch(() => ({ success: false, data: [] }))
+        getAllExpenses({ status: 'submitted' }).catch(() => []),
+        getAllExpenses({ manager_id: user.id }).catch(() => [])
       ]);
       
-      const pendingData = pendingResponse.success ? (pendingResponse.data.results || pendingResponse.data || []) : [];
-      const allData = allResponse.success ? (allResponse.data.results || allResponse.data || []) : [];
+      // Handle different response formats
+      let pendingData = [];
+      if (Array.isArray(pendingResponse)) {
+        pendingData = pendingResponse;
+      } else if (pendingResponse && pendingResponse.data) {
+        pendingData = Array.isArray(pendingResponse.data) ? pendingResponse.data : (pendingResponse.data.results || []);
+      } else if (pendingResponse && Array.isArray(pendingResponse.results)) {
+        pendingData = pendingResponse.results;
+      }
+      
+      let allData = [];
+      if (Array.isArray(allResponse)) {
+        allData = allResponse;
+      } else if (allResponse && allResponse.data) {
+        allData = Array.isArray(allResponse.data) ? allResponse.data : (allResponse.data.results || []);
+      } else if (allResponse && Array.isArray(allResponse.results)) {
+        allData = allResponse.results;
+      }
       
       setPendingExpenses(pendingData);
       setAllExpenses(allData);
@@ -102,13 +118,19 @@ const ManagerDashboard = ({ user }) => {
       }
       
       if (result.success) {
-        // Update local state
-        setPendingExpenses(pendingExpenses.filter(e => e.id !== selectedExpense.id));
+        // Update local state with array safety
+        setPendingExpenses((prevExpenses) => {
+          const safeExpenses = Array.isArray(prevExpenses) ? prevExpenses : [];
+          return safeExpenses.filter(e => e.id !== selectedExpense.id);
+        });
         
-        // Update all expenses list
-        setAllExpenses(allExpenses.map(e => 
-          e.id === selectedExpense.id ? { ...e, ...result.data } : e
-        ));
+        // Update all expenses list with array safety
+        setAllExpenses((prevExpenses) => {
+          const safeExpenses = Array.isArray(prevExpenses) ? prevExpenses : [];
+          return safeExpenses.map(e => 
+            e.id === selectedExpense.id ? { ...e, ...result.data } : e
+          );
+        });
         
         console.log('Approval processed successfully:', result.data);
       } else {
@@ -130,31 +152,36 @@ const ManagerDashboard = ({ user }) => {
   };
 
   const getManagerStats = () => {
-    const pendingCount = pendingExpenses.length;
-    const pendingAmount = pendingExpenses.reduce((sum, e) => sum + e.amount, 0);
+    // Ensure arrays are valid before processing
+    const safePendingExpenses = Array.isArray(pendingExpenses) ? pendingExpenses : [];
+    const safeAllExpenses = Array.isArray(allExpenses) ? allExpenses : [];
+    
+    const pendingCount = safePendingExpenses.length;
+    const pendingAmount = safePendingExpenses.reduce((sum, e) => sum + (parseFloat(e.amount) || 0), 0);
     
     const thisMonth = new Date().getMonth();
     const thisYear = new Date().getFullYear();
     
-    const monthlyExpenses = allExpenses.filter(e => {
+    const monthlyExpenses = safeAllExpenses.filter(e => {
       const expenseDate = new Date(e.date);
       return expenseDate.getMonth() === thisMonth && expenseDate.getFullYear() === thisYear;
     });
     
     const monthlyApproved = monthlyExpenses.filter(e => e.status === 'approved');
-    const monthlyAmount = monthlyApproved.reduce((sum, e) => sum + e.amount, 0);
+    const monthlyAmount = monthlyApproved.reduce((sum, e) => sum + (parseFloat(e.amount) || 0), 0);
     
     return {
       pendingCount,
       pendingAmount,
       monthlyCount: monthlyApproved.length,
       monthlyAmount,
-      teamSize: new Set(allExpenses.map(e => e.employeeId)).size
+      teamSize: new Set(safeAllExpenses.map(e => e.employeeId)).size
     };
   };
 
   const getFilteredExpenses = (expenses) => {
-    return expenses.filter(expense => {
+    const safeExpenses = Array.isArray(expenses) ? expenses : [];
+    return safeExpenses.filter(expense => {
       const matchesSearch = !filters.search || 
         expense.description.toLowerCase().includes(filters.search.toLowerCase()) ||
         expense.employeeName.toLowerCase().includes(filters.search.toLowerCase());
@@ -403,7 +430,7 @@ const ManagerDashboard = ({ user }) => {
                               className={`approver ${approver.status}`}
                               title={`${approver.name || 'Unknown'} - ${approver.status}`}
                             >
-                              {approver.name ? approver.name.split(' ').map(n => n[0]).join('') : '??'}
+                              {approver.name ? approver.name.split(' ').map(n => n[0] || '').join('') : '??'}
                             </span>
                           ))}
                         </div>
@@ -518,7 +545,7 @@ const ManagerDashboard = ({ user }) => {
               <div className="approval-history-section">
                 <h4>Approval History</h4>
                 <div className="history-timeline">
-                  {selectedExpense.approvalHistory.map((entry, index) => (
+                  {(Array.isArray(selectedExpense.approvalHistory) ? selectedExpense.approvalHistory : []).map((entry, index) => (
                     <div key={index} className={`history-entry ${entry.action}`}>
                       <div className="history-icon">
                         {entry.action === 'approve' ? '✓' : entry.action === 'reject' ? '✗' : '👁'}
