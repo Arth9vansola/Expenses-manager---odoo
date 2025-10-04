@@ -184,3 +184,14 @@
   color: #6c757d;
   font-style: italic;
 }
+
+.form-warning {
+  margin-top: 0.5rem;
+  padding: 0.75rem;
+  background-color: #fff3cd;
+  border: 1px solid #ffeaa7;
+  border-radius: 6px;
+  color: #856404;
+  font-size: 0.875rem;
+  font-weight: 500;
+}

@@ -75,15 +75,18 @@ const UserForm = ({
       // Add manager name to form data
       let managerName = null;
       if (formData.managerId) {
-        const manager = availableManagers.find(m => m.id === parseInt(formData.managerId));
+        const manager = availableManagers.find(m => m.id === formData.managerId);
         managerName = manager?.name || null;
       }
 
       const submitData = {
         ...formData,
-        managerId: formData.managerId ? parseInt(formData.managerId) : null,
+        manager_id: formData.managerId || null,  // Send as UUID string, not integer
         managerName
       };
+      
+      // Remove the camelCase managerId to avoid confusion
+      delete submitData.managerId;
 
       await onSubmit(submitData);
     } catch (error) {
@@ -146,16 +149,31 @@ const UserForm = ({
       />
 
       {formData.role !== 'admin' && (
-        <FormSelect
-          label="Report to Manager *"
-          name="managerId"
-          value={formData.managerId}
-          onChange={handleChange}
-          error={errors.managerId}
-          options={managerOptions.length > 0 ? managerOptions : [{ value: '', label: 'No managers available' }]}
-          required
-          disabled={loading}
-        />
+        <div className="form-group">
+          <FormSelect
+            label="Report to Manager *"
+            name="managerId"
+            value={formData.managerId}
+            onChange={handleChange}
+            error={errors.managerId}
+            options={[
+              { value: '', label: 'Select a manager...' },
+              ...managerOptions
+            ]}
+            required
+            disabled={loading || managerOptions.length === 0}
+            helpText={
+              managerOptions.length === 0 
+                ? "No managers available. Create an admin or manager user first."
+                : `Choose a manager for this ${formData.role}. Required for employees and managers.`
+            }
+          />
+          {managerOptions.length === 0 && (
+            <div className="form-warning">
+              ⚠️ No managers or admins are available to assign. You may need to create an admin or manager user first.
+            </div>
+          )}
+        </div>
       )}
 
       {!isInvitation && (

@@ -28,6 +28,7 @@ export const FormSelect = ({
   required = false, 
   options = [], 
   className = '', 
+  helpText = '',
   ...props 
 }) => {
   return (
@@ -39,13 +40,16 @@ export const FormSelect = ({
         className={`form-input ${error ? 'error' : ''}`}
         {...props}
       >
-        <option value="">Select {label}</option>
+        {options.length > 0 && options[0].value !== '' && (
+          <option value="">Select {label}</option>
+        )}
         {options.map((option) => (
           <option key={option.value} value={option.value}>
             {option.label}
           </option>
         ))}
       </select>
+      {helpText && !error && <span className="help-text">{helpText}</span>}
       {error && <span className="error-message">{error}</span>}
     </div>
   );

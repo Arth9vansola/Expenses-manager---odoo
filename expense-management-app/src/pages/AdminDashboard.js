@@ -79,6 +79,7 @@ const AdminDashboard = ({ user }) => {
   const handleCreateUser = async (userData) => {
     try {
       console.log('Creating user:', userData);
+      console.log('Available managers:', availableManagers);
       
       const response = await createUser(userData);
       
@@ -220,7 +221,9 @@ const AdminDashboard = ({ user }) => {
   // Create a safe utility function to get available managers from current users
   const getAvailableManagersFromUsers = (usersList) => {
     const safeUsers = Array.isArray(usersList) ? usersList : [];
-    return safeUsers.filter(user => user.role === 'manager' || user.role === 'admin');
+    const managers = safeUsers.filter(user => user.role === 'manager' || user.role === 'admin');
+    console.log('Available managers found:', managers.length, managers.map(m => ({ id: m.id, name: m.name, role: m.role })));
+    return managers;
   };
 
   const availableManagers = getAvailableManagersFromUsers(users);

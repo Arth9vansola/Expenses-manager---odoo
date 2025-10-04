@@ -94,8 +94,8 @@ class CreateUserSerializer(serializers.Serializer):
         return value
     
     def validate_manager_id(self, value):
-        if value and not User.objects.filter(id=value, role='manager').exists():
-            raise serializers.ValidationError("Manager not found or user is not a manager.")
+        if value and not User.objects.filter(id=value, role__in=['manager', 'admin']).exists():
+            raise serializers.ValidationError("Manager not found or user is not a manager or admin.")
         return value
 
 
@@ -105,8 +105,8 @@ class UpdateUserSerializer(serializers.Serializer):
     reset_password = serializers.BooleanField(required=False, default=False)
     
     def validate_manager_id(self, value):
-        if value and not User.objects.filter(id=value, role='manager').exists():
-            raise serializers.ValidationError("Manager not found or user is not a manager.")
+        if value and not User.objects.filter(id=value, role__in=['manager', 'admin']).exists():
+            raise serializers.ValidationError("Manager not found or user is not a manager or admin.")
         return value
 
 

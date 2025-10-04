@@ -10,7 +10,7 @@
 
 ## 👥 Team Members  
 
-### 🥇 Team Leader  
+### 👤 Team Leader  
 - **Name:** Arth Vansola  
 - **Email:** [arthvansola@gmail.com](mailto:arthvansola@gmail.com)  
 - **Phone:** 7862013542  
@@ -46,7 +46,7 @@
 
 ---
 
-## 🎥 Video Presentation  
+## 🎥 Video Presentation Link  
 - [Demo Link](https://www.youtube.com/watch?v=example)
 
 
